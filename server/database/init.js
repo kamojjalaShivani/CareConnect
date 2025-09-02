@@ -408,6 +408,17 @@ async function insertSampleData() {
     ];
     await CareRequest.bulkCreate(careRequests, { ignoreDuplicates: true });
 
+    // Create admin user
+    const hashedPassword = await bcrypt.hash('admin123', 10);
+    await User.create({
+      email: 'admin@example.com',
+      password_hash: hashedPassword,
+      name: 'Admin User',
+      phone: '5550000000',
+      role: 'admin'
+    });
+
+    console.log('Database: Admin user created successfully');
     console.log('Database: Seattle sample dataset inserted ✅');
   } catch (error) {
     console.error('Database: Error inserting Seattle sample data:', error);
