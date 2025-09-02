@@ -410,13 +410,16 @@ async function insertSampleData() {
 
     // Create admin user
     const hashedPassword = await bcrypt.hash('admin123', 10);
-    await User.create({
-      email: 'admin@example.com',
-      password_hash: hashedPassword,
-      name: 'Admin User',
-      phone: '5550000000',
-      role: 'admin'
+    await User.findOrCreate({
+      where: { email: 'admin@example.com' },
+      defaults: {
+        password_hash: await bcrypt.hash('admin123', 10),
+        name: 'Admin User',
+        phone: '5550000000',
+        role: 'admin'
+      }
     });
+    
 
     console.log('Database: Admin user created successfully');
     console.log('Database: Seattle sample dataset inserted ✅');
