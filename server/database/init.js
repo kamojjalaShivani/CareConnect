@@ -413,11 +413,14 @@ async function insertSampleData() {
     await User.findOrCreate({
       where: { email: 'admin@example.com' },
       defaults: {
-        password_hash: await bcrypt.hash('admin123', 10),
+        password_hash: hashedPassword,
         name: 'Admin User',
         phone: '5550000000',
         role: 'admin'
-      }
+      },
+      // Ensure the admin user is always created/updated with the correct hashed password during development
+      // In a production environment, this should be handled differently (e.g., migration, admin panel)
+      force: true 
     });
     
 

@@ -1,5 +1,8 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { ApiService } from '../services/api';
+import { BackendApiService } from '../services/backendApi';
+
+// Rename ApiService to BackendApiService for clarity
+const ApiService = BackendApiService;
 
 interface User {
   id: string;
@@ -22,27 +25,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check for stored user session
-    const storedUser = localStorage.getItem('careconnect_user');
-    const storedToken = localStorage.getItem('careconnect_token');
-    
-    if (storedUser) {
-      try {
-        const userData = JSON.parse(storedUser);
-        if (storedToken) {
-          setUser(userData);
-        } else {
-          // User data exists but no token, clear user data
+    const loadUser = async () => {
+      const token = localStorage.getItem('careconnect_token');
+      if (token) {
+        try {
+          // Assuming ApiService will have a method to get current user
+          const response = await ApiService.getCurrentUser();
+          setUser(response.user);
+        } catch (error) {
+          console.error('AuthContext: Failed to load user from token', error);
+          localStorage.removeItem('careconnect_token');
           localStorage.removeItem('careconnect_user');
+          setUser(null);
         }
-      } catch (error) {
-        // Invalid user data, clear it
-        localStorage.removeItem('careconnect_user');
-        localStorage.removeItem('careconnect_token');
       }
-    }
-    
-    setLoading(false);
+      setLoading(false);
+    };
+
+    loadUser();
   }, []);
 
   const signIn = async (email: string, password: string) => {

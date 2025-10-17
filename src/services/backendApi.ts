@@ -1,6 +1,6 @@
 import { Provider, Family, CareRequest, DashboardStats, CareRequestMatches, Assignment, RecentCareRequestActivity } from '../types';
 
-const API_BASE_URL = 'http://localhost:3001/api'; // Assuming backend runs on 3001, frontend on 5174
+const API_BASE_URL = 'http://localhost:3002/api'; // Assuming backend runs on 3001, frontend on 5174
 
 class ApiError extends Error {
   constructor(message: string, public status: number) {
@@ -60,6 +60,13 @@ export class BackendApiService {
     localStorage.setItem('careconnect_token', response.token);
     localStorage.setItem('careconnect_user', JSON.stringify(response.user));
     
+    return response;
+  }
+
+  static async getCurrentUser(): Promise<{ user: any }> {
+    const response = await apiRequest('/auth/me', {
+      method: 'GET',
+    });
     return response;
   }
 
